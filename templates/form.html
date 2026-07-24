@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}{{ "Editar" if mode == "edit" else "Nuevo" }} {{ entity.label }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>{{ "Editar" if mode == "edit" else "Nuevo" }} {{ entity.label }}</h1>
+    <a href="{{ url_for('crud.list_entity', entity_key=entity_key) }}" class="btn btn-outline-secondary btn-sm">&larr; Volver al listado</a>
+</div>
+
+<div class="card shadow-sm">
+<div class="card-body">
+<form method="post">
+    {% for col in columns %}
+        {% if not col.auto %}
+        <div class="mb-3">
+            <label class="form-label">
+                {{ col.label }}
+                {% if col.required %}<span class="text-danger">*</span>{% endif %}
+            </label>
+
+            {% set current_value = row[col.name] if row else None %}
+            {% set is_pk_locked = mode == "edit" and col.pk %}
+
+            {% if col.type == "fk" %}
+                <select name="{{ col.name }}" class="form-select" {% if col.required %}required{% endif %} {% if is_pk_locked %}disabled{% endif %}>
+                    <option value="">-- Seleccione --</option>
+                    {% for value, display_label in col.fk_options %}
+                    <option value="{{ value }}" {% if current_value is not none and current_value|string == value|string %}selected{% endif %}>
+                        {{ display_label }}
+                    </option>
+                    {% endfor %}
+                </select>
+                {% if is_pk_locked %}
+                    <input type="hidden" name="{{ col.name }}" value="{{ current_value }}">
+                {% endif %}
+
+            {% elif col.type == "select" %}
+                <select name="{{ col.name }}" class="form-select" {% if col.required %}required{% endif %} {% if is_pk_locked %}disabled{% endif %}>
+                    <option value="">-- Seleccione --</option>
+                    {% for opt in col.options %}
+                    <option value="{{ opt }}" {% if current_value == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+                {% if is_pk_locked %}
+                    <input type="hidden" name="{{ col.name }}" value="{{ current_value }}">
+                {% endif %}
+
+            {% elif col.type == "password" %}
+                <input type="password" name="{{ col.name }}" class="form-control"
+                       placeholder="{{ 'Dejar en blanco para no cambiar' if mode == 'edit' else '' }}"
+                       autocomplete="new-password"
+                       {% if col.required and mode != 'edit' %}required{% endif %}>
+
+            {% elif col.type == "date" %}
+                <input type="date" name="{{ col.name }}" class="form-control"
+                       value="{{ current_value.strftime('%Y-%m-%d') if current_value else '' }}"
+                       {% if col.required %}required{% endif %} {% if is_pk_locked %}disabled{% endif %}>
+                {% if is_pk_locked %}
+                    <input type="hidden" name="{{ col.name }}" value="{{ current_value.strftime('%Y-%m-%d') if current_value else '' }}">
+                {% endif %}
+
+            {% elif col.type == "number" %}
+                <input type="number" step="any" name="{{ col.name }}" class="form-control"
+                       value="{{ current_value if current_value is not none else '' }}"
+                       {% if col.required %}required{% endif %} {% if is_pk_locked %}disabled{% endif %}>
+                {% if is_pk_locked %}
+                    <input type="hidden" name="{{ col.name }}" value="{{ current_value }}">
+                {% endif %}
+
+            {% else %}
+                <input type="text" name="{{ col.name }}" class="form-control"
+                       value="{{ current_value if current_value is not none else '' }}"
+                       {% if col.required %}required{% endif %} {% if is_pk_locked %}disabled{% endif %}>
+                {% if is_pk_locked %}
+                    <input type="hidden" name="{{ col.name }}" value="{{ current_value }}">
+                {% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Inicio - Gimnasio{% endblock %}
+{% block content %}
+<h1 class="mb-4">Entidades del Sistema</h1>
+<div class="row row-cols-1 row-cols-md-3 g-3">
+    {% for key, entity in entities.items() %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ entity.plural }}</h5>
+                <p class="card-text text-muted small">Tabla: {{ entity.table }}</p>
+                <a href="{{ url_for('crud.list_entity', entity_key=key) }}" class="btn btn-primary btn-sm">Ver / Administrar</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ entity.plural }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>{{ entity.plural }}</h1>
+    <div>
+        <a href="{{ url_for('crud.index') }}" class="btn btn-outline-secondary btn-sm">&larr; Volver</a>
+        {% if perms.create %}
+        <a href="{{ url_for('crud.new_entity', entity_key=entity_key) }}" class="btn btn-success btn-sm">+ Nuevo</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="table-responsive">
+<table class="table table-striped table-bordered align-middle bg-white">
+    <thead class="table-dark">
+        <tr>
+            {% for col in entity.columns %}
+            <th>{{ col.label }}</th>
+            {% endfor %}
+            {% if perms.edit or perms.delete %}
+            <th style="width: 160px;">Acciones</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+        <tr>
+            {% for col in entity.columns %}
+            <td>{{ row[col.name] if row[col.name] is not none and col.type != "password" else ("••••••" if col.type == "password" else "") }}</td>
+            {% endfor %}
+            {% if perms.edit or perms.delete %}
+            <td>
+                {% if perms.edit %}
+                <a href="{{ url_for('crud.edit_entity', entity_key=entity_key, pk_str=row['_pk_str']) }}" class="btn btn-sm btn-warning">Editar</a>
+                {% endif %}
+                {% if perms.delete %}
+                <form action="{{ url_for('crud.delete_entity', entity_key=entity_key, pk_str=row['_pk_str']) }}" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar este registro?');">
+                    <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                </form>
+                {% endif %}
+            </td>
+            {% endif %}
+        </tr>
+        {% else %}
+        <tr><td colspan="{{ entity.columns|length + 1 }}" class="text-center text-muted">No hay registros.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}
