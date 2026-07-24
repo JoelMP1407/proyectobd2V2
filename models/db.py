@@ -150,3 +150,15 @@ def fetch_fk_options(ref_table, value_col, display_cols):
         return options
     finally:
         conn.close()
+
+def run_query(sql, params=None):
+    """Ejecuta un SELECT personalizado y devuelve (columnas, filas)."""
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, params or {})
+        cols = [d[0] for d in cur.description]
+        rows = [dict(zip(cols, row)) for row in cur.fetchall()]
+        return cols, rows
+    finally:
+        conn.close()

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+<h1 class="mb-4">{{ titulo }}</h1>
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            {% for col in columnas %}
+            <th>{{ col }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for fila in filas %}
+        <tr>
+            {% for col in columnas %}
+            <td>{{ fila[col] }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

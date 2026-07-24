@@ -263,3 +263,20 @@ def delete_entity(entity_key, pk_str):
         flash(f"No se pudo eliminar (probablemente tiene registros relacionados): {e}", "danger")
 
     return redirect(url_for("crud.list_entity", entity_key=entity_key))
+
+@crud_bp.route("/reportes/clientes-instructor")
+def reporte_clientes_instructor():
+    sql = """
+        SELECT c.CI, p.NOMBRE, p.PATERNO, i.CERTIFICACION
+        FROM CLIENTE c
+        JOIN PERSONA p ON p.CI = c.CI
+        JOIN INSTRUCTOR i ON i.CI = c.CI_ENTRENADOR
+        ORDER BY p.PATERNO
+    """
+    cols, rows = db.run_query(sql)
+    return render_template(
+        "reporte.html",
+        titulo="Clientes con su Instructor",
+        columnas=cols,
+        filas=rows,
+    )
