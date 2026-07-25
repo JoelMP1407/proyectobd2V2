@@ -1,6 +1,6 @@
 import time
 from flask import Blueprint, render_template, request, flash
-from models.db import get_db_connection # Asegúrate de importar tu función de conexión a Oracle
+from models.db import get_connection # Asegúrate de importar tu función de conexión a Oracle
 
 terminal_bp = Blueprint('terminal', __name__)
 
@@ -18,7 +18,7 @@ def consola_sql():
         sql_query = request.form.get('sql', '').strip()
         
         if sql_query:
-            conn = get_db_connection()
+            conn = get_connection()
             cursor = conn.cursor()
             inicio = time.time()
             
