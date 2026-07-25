@@ -152,11 +152,19 @@ def fetch_fk_options(ref_table, value_col, display_cols):
         conn.close()
 
 def run_query(sql, params=None):
-    """Ejecuta un SELECT personalizado y devuelve (columnas, filas)."""
+    """
+    Ejecuta cualquier sentencia SQL/PL-SQL.
+    Si es un SELECT, devuelve (columnas, filas).
+    Si es DDL/DML (CREATE, INSERT, UPDATE, DELETE, etc.), la ejecuta,
+    hace commit y devuelve ([], []).
+    """
     conn = get_connection()
     try:
         cur = conn.cursor()
         cur.execute(sql, params or {})
+        if cur.description is None:
+            conn.commit()
+            return [], []
         cols = [d[0] for d in cur.description]
         rows = [dict(zip(cols, row)) for row in cur.fetchall()]
         return cols, rows

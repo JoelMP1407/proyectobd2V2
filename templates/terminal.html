@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<div class="contenedor">
+    <span class="motor-tag">ORACLE DATABASE 26ai</span>
+    <h2>
+        CONSOLA SQL 
+        <span class="db-tag">Conectado</span>
+    </h2>
+
+    <form method="POST" action="{{ url_for('terminal.consola_sql') }}">
+        <textarea name="sql" rows="6" placeholder="Escribe tu consulta SQL aquí (ej: SELECT * FROM PERSONA)...">{{ sql_query }}</textarea>
+        <button type="submit">Ejecutar Consulta</button>
+    </form>
+
+    <h3>Resultado</h3>
+
+    {% if error_msg %}
+        <p class="msg error"><strong>Error Oracle:</strong> {{ error_msg }}</p>
+    {% elif sql_query %}
+        <div class="stats">
+            {% if es_select %}
+                <span>Filas devueltas: <b>{{ resultados|length }}</b></span>
+            {% else %}
+                <span>Filas afectadas: <b>{{ filas_afectadas }}</b></span>
+            {% endif %}
+            <span>Tiempo: <b>{{ tiempo_ms }} ms</b></span>
+        </div>
+
+        <div class="resultado">
+            {% if es_select and resultados %}
+                <table>
+                    <thead>
+                        <tr>
+                            {% for col in columnas %}
+                                <th>{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fila in resultados %}
+                            <tr>
+                                {% for valor in fila %}
+                                    <td>{{ valor if valor is not none else '' }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% elif es_select and not resultados %}
+                <p class="msg">Sin resultados para mostrar.</p>
+            {% else %}
+                <p class="msg ok">Sentencia ejecutada correctamente.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="footer">
+        Desarrollado por: Carlos Enrique Suñagua Leonardini
+    </div>
+</div>
+{% endblock %}

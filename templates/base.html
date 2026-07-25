@@ -8,8 +8,8 @@
 <body class="bg-light">
 <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container">
-        <a class="navbar-brand" href="{{ url_for('crud.index') }}">🏋️ Gimnasio - Panel de Administración</a>
-        <a class="btn btn-outline-light btn-sm" href="{{ url_for('crud.reporte_clientes_instructor') }}">Reporte: Clientes-Instructor</a>
+        <a class="navbar-brand" href="{{ url_for('crud.index') }}">Gimnasio - Panel de Administración</a>
+        <a class="btn btn-outline-light btn-sm" href="{{ url_for('crud.reporte_clientes_instructor') }}">Interfaz</a>
         {% if current_user %}
         <span class="d-flex align-items-center gap-3">
             <span class="text-light small">

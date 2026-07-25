@@ -1,7 +1,21 @@
 {% extends "base.html" %}
 {% block title %}{{ titulo }}{% endblock %}
 {% block content %}
+
 <h1 class="mb-4">{{ titulo }}</h1>
+
+<form method="POST" class="mb-3">
+    <div class="mb-2">
+        <textarea name="consulta" rows="8" cols="200" class="form-control" placeholder="Escribe tu SELECT aquí...">{{ consulta or "" }}</textarea>
+    </div>
+    <button type="submit" name="ejecutar" class="btn btn-primary">EJECUTAR</button>
+</form>
+
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+{% if columnas %}
 <table class="table table-striped table-bordered">
     <thead class="table-dark">
         <tr>
@@ -20,4 +34,5 @@
         {% endfor %}
     </tbody>
 </table>
+{% endif %}
 {% endblock %}

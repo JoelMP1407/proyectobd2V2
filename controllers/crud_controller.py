@@ -263,20 +263,27 @@ def delete_entity(entity_key, pk_str):
         flash(f"No se pudo eliminar (probablemente tiene registros relacionados): {e}", "danger")
 
     return redirect(url_for("crud.list_entity", entity_key=entity_key))
-
-@crud_bp.route("/reportes/clientes-instructor")
+@crud_bp.route("/reportes/clientes-instructor", methods=["GET", "POST"])
 def reporte_clientes_instructor():
-    sql = """
-        SELECT c.CI, p.NOMBRE, p.PATERNO, i.CERTIFICACION
-        FROM CLIENTE c
-        JOIN PERSONA p ON p.CI = c.CI
-        JOIN INSTRUCTOR i ON i.CI = c.CI_ENTRENADOR
-        ORDER BY p.PATERNO
-    """
-    cols, rows = db.run_query(sql)
+    if _current_role() != "ADMIN":
+        abort(403)
+
+    columnas, filas, error = [], [], None
+    consulta = request.form.get("consulta", "")
+
+    if request.method == "POST" and consulta.strip():
+        try:
+            columnas, filas = db.run_query(consulta)
+            if not columnas:
+                flash("Sentencia ejecutada correctamente.", "success")
+        except Exception as e:
+            error = f"Error al ejecutar la consulta: {e}"
+
     return render_template(
         "reporte.html",
-        titulo="Clientes con su Instructor",
-        columnas=cols,
-        filas=rows,
+        titulo="Consulta personalizada",
+        columnas=columnas,
+        filas=filas,
+        consulta=consulta,
+        error=error,
     )
